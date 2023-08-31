@@ -1,0 +1,151 @@
+openapi: 3.0.0
+info:
+  title: Movements
+  description:
+    This application allows you to obtain the movements of a client and their products.
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Customer Movements
+  url: http://swagger.io
+servers:
+  - url: https://localhost:8084
+tags:
+  - name: movements
+    description: Everything about your movements
+paths:
+  /customer/{customerId}/account/{accountNumber}:
+    get:
+      tags:
+        - movements
+      summary: It allows to obtain the movements of a client's account.
+      description: Allows you to obtain all the movements of a client's account, with a range of dates (optional)
+      operationId: getMovementsByAccount
+      parameters:
+        - name: customerId
+          in: path
+          description: ID of the customer.
+          required: true
+          schema:
+            type: string
+        - name: accountNumber
+          in: path
+          description: Customer account number
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movements'
+        '400':
+          description: Invalid request
+        '404':
+          description: Customer Id or Account number are invalid
+
+  /customer/{customerId}/credit/{creditNumber}:
+    get:
+      tags:
+        - movements
+      summary: It allows to obtain the movements of a client's credits.
+      description: Allows you to obtain all the movements of a client's credits, with a range of dates (optional)
+      operationId: getMovementsByCredit
+      parameters:
+        - name: customerId
+          in: path
+          description: ID of the customer.
+          required: true
+          schema:
+            type: string
+        - name: creditNumber
+          in: path
+          description: Customer credit number
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movements'
+        '400':
+          description: Invalid request
+        '404':
+          description: Customer Id or Credit number are invalid
+
+  /customer/{customerId}/card/{cardNumber}:
+    get:
+      tags:
+        - movements
+      summary: It allows to obtain the movements of a client's cards.
+      description: Allows you to obtain all the movements of a client's cards, with a range of dates (optional)
+      operationId: getMovementsByCard
+      parameters:
+        - name: customerId
+          in: path
+          description: ID of the customer.
+          required: true
+          schema:
+            type: string
+        - name: cardNumber
+          in: path
+          description: Customer card number
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movements'
+        '400':
+          description: Invalid request
+        '404':
+          description: Customer Id or Credit number are invalid
+
+components:
+  schemas:
+    Movements:
+      type: object
+      properties:
+        movementNumber:
+          type: string
+          description: Movement number
+        movementType:
+          type: string
+          description: Type of Movement
+        customerDocument:
+          type: string
+          description: Customer Document
+        accountType:
+          type: string
+          description: Type of account
+        accountNumber:
+          type: string
+          description: Account Number
+        cardNumber:
+          type: string
+          description: Card Number
+        creditId:
+          type: string
+          description: Credit ID
+        amount:
+          type: number
+          format: double
+        movementDate:
+          type: string
+          format: date
+            
+      
