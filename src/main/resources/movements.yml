@@ -13,15 +13,15 @@ tags:
   - name: movements
     description: Everything about your movements
 paths:
-  /customer/{customerId}/account/{accountNumber}:
+  /movement/customer/{clientId}/account/{accountNumber}:
     get:
       tags:
         - movements
       summary: It allows to obtain the movements of a client's account.
       description: Allows you to obtain all the movements of a client's account, with a range of dates (optional)
-      operationId: getMovementsByAccount
+      operationId: movementsByAccount
       parameters:
-        - name: customerId
+        - name: clientId
           in: path
           description: ID of the customer.
           required: true
@@ -47,15 +47,15 @@ paths:
         '404':
           description: Customer Id or Account number are invalid
 
-  /customer/{customerId}/credit/{creditNumber}:
+  /movement/customer/{clientId}/credit/{creditNumber}:
     get:
       tags:
         - movements
       summary: It allows to obtain the movements of a client's credits.
       description: Allows you to obtain all the movements of a client's credits, with a range of dates (optional)
-      operationId: getMovementsByCredit
+      operationId: movementsByCredit
       parameters:
-        - name: customerId
+        - name: clientId
           in: path
           description: ID of the customer.
           required: true
@@ -81,15 +81,15 @@ paths:
         '404':
           description: Customer Id or Credit number are invalid
 
-  /customer/{customerId}/card/{cardNumber}:
+  /movement/customer/{clientId}/card/{cardNumber}:
     get:
       tags:
         - movements
       summary: It allows to obtain the movements of a client's cards.
       description: Allows you to obtain all the movements of a client's cards, with a range of dates (optional)
-      operationId: getMovementsByCard
+      operationId: movementsByCard
       parameters:
-        - name: customerId
+        - name: clientId
           in: path
           description: ID of the customer.
           required: true
@@ -115,8 +115,39 @@ paths:
         '404':
           description: Customer Id or Credit number are invalid
 
+  /movement:
+    post:
+      tags:
+        - movements
+      summary: It allows you to save a movement of your credit
+      operationId: saveMovement
+      requestBody:
+        required: true
+        description: Allows you to save information about your credit.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Movements'
+      responses:
+        '200':
+          description: OK
+
+
 components:
   schemas:
+    SaveMovements:
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+        clientDocument:
+          type: string
+        creditNumber:
+          type: string
+        movementType:
+          type: string
+
     Movements:
       type: object
       properties:
@@ -126,7 +157,7 @@ components:
         movementType:
           type: string
           description: Type of Movement
-        customerDocument:
+        clientDocument:
           type: string
           description: Customer Document
         accountType:
@@ -138,10 +169,13 @@ components:
         cardNumber:
           type: string
           description: Card Number
-        creditId:
+        creditNumber:
           type: string
           description: Credit ID
         amount:
+          type: number
+          format: double
+        commission:
           type: number
           format: double
         movementDate:

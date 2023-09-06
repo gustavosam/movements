@@ -1,33 +1,37 @@
 package com.microservice.movements.documents;
 
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDate;
-
+/**
+ * Esta clase representa a la colección movements en mongo db.
+ * */
 @Document(collection = "movements")
 @Getter
 @Setter
 public class MovementsDocuments {
 
-    @Id
-    private String movementNumber;
+  @Id
+  private String movementNumber;
 
-    private String movementType;
+  private String movementType;
 
-    private String customerDocument;
+  private String clientDocument;
 
-    private String accountType;
+  private String accountType;
 
-    private String accountNumber;
+  private String accountNumber;
 
-    private String cardNumber;
+  private String cardNumber;
 
-    private String creditId;
+  private String creditNumber;
 
-    private Double amount;
+  private Double amount;
 
-    private LocalDate movementDate;
+  private Double commission;
+
+  private LocalDate movementDate;
 }
