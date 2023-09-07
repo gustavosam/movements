@@ -3,7 +3,7 @@ package com.microservice.movements.delegateimpl;
 import com.microservice.movements.api.MovementApiDelegate;
 import com.microservice.movements.model.Movements;
 import com.microservice.movements.service.MovementsService;
-import com.microservice.movements.service.mappers.MovementsMapper;
+import com.microservice.movements.service.mappers.MapMovement;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -22,6 +22,9 @@ public class MovementsDelegateImpl implements MovementApiDelegate {
   @Autowired
   private MovementsService movementsService;
 
+  @Autowired
+  private MapMovement mapMovement;
+
   @Override
   public ResponseEntity<List<Movements>> movementsByAccount(String clientId, String accountNumber) {
 
@@ -29,7 +32,7 @@ public class MovementsDelegateImpl implements MovementApiDelegate {
             movementsService.findByCustomerDocumentAndAccountNumber(clientId, accountNumber)
                     .stream()
                     .filter(Objects::nonNull)
-                    .map(MovementsMapper::mapMovementsDocumentToMovements)
+                    .map(movementsDocuments -> mapMovement.mapMovementsDocumentToMovements(movementsDocuments))
                     .collect(Collectors.toList())
     );
   }
@@ -41,7 +44,7 @@ public class MovementsDelegateImpl implements MovementApiDelegate {
             movementsService.findByCustomerDocumentAndCardNumber(clientId, cardNumber)
                     .stream()
                     .filter(Objects::nonNull)
-                    .map(MovementsMapper::mapMovementsDocumentToMovements)
+                    .map(movementsDocuments -> mapMovement.mapMovementsDocumentToMovements(movementsDocuments))
                     .collect(Collectors.toList())
     );
 
@@ -54,7 +57,7 @@ public class MovementsDelegateImpl implements MovementApiDelegate {
             movementsService.findByCustomerDocumentAndCreditId(clientId, creditNumber)
                     .stream()
                     .filter(Objects::nonNull)
-                    .map(MovementsMapper::mapMovementsDocumentToMovements)
+                    .map(movementsDocuments -> mapMovement.mapMovementsDocumentToMovements(movementsDocuments))
                     .collect(Collectors.toList())
     );
   }
