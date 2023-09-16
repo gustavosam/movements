@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * Esta clase implementa los métodos generados por Open API.
@@ -26,45 +29,42 @@ public class MovementsDelegateImpl implements MovementApiDelegate {
   private MapMovement mapMovement;
 
   @Override
-  public ResponseEntity<List<Movements>> movementsByAccount(String clientId, String accountNumber) {
+  public Mono<ResponseEntity<Flux<Movements>>> movementsByAccount(String clientId,
+                                                                  String accountNumber,
+                                                                  ServerWebExchange exchange) {
 
-    return ResponseEntity.status(HttpStatus.OK).body(
-            movementsService.findByCustomerDocumentAndAccountNumber(clientId, accountNumber)
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .map(movementsDocuments -> mapMovement.mapMovementsDocumentToMovements(movementsDocuments))
-                    .collect(Collectors.toList())
-    );
+    Flux<Movements> movementsFlux = movementsService.findByCustomerDocumentAndAccountNumber(clientId, accountNumber);
+
+    return Mono.just(ResponseEntity.ok(movementsFlux));
   }
 
   @Override
-  public ResponseEntity<List<Movements>> movementsByCard(String clientId, String cardNumber) {
+  public Mono<ResponseEntity<Flux<Movements>>> movementsByCard(String clientId,
+                                                               String cardNumber,
+                                                               ServerWebExchange exchange) {
 
-    return ResponseEntity.status(HttpStatus.OK).body(
-            movementsService.findByCustomerDocumentAndCardNumber(clientId, cardNumber)
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .map(movementsDocuments -> mapMovement.mapMovementsDocumentToMovements(movementsDocuments))
-                    .collect(Collectors.toList())
-    );
+    Flux<Movements> movementsFlux = movementsService.findByCustomerDocumentAndCardNumber(clientId, cardNumber);
 
+    return Mono.just(ResponseEntity.ok(movementsFlux));
   }
 
   @Override
-  public ResponseEntity<List<Movements>> movementsByCredit(String clientId, String creditNumber) {
+  public Mono<ResponseEntity<Flux<Movements>>> movementsByCredit(String clientId,
+                                                                 String creditNumber,
+                                                                 ServerWebExchange exchange) {
 
-    return ResponseEntity.status(HttpStatus.OK).body(
-            movementsService.findByCustomerDocumentAndCreditId(clientId, creditNumber)
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .map(movementsDocuments -> mapMovement.mapMovementsDocumentToMovements(movementsDocuments))
-                    .collect(Collectors.toList())
-    );
+    Flux<Movements> movementsFlux = movementsService.findByCustomerDocumentAndCreditId(clientId, creditNumber);
+
+    return Mono.just(ResponseEntity.ok(movementsFlux));
   }
 
   @Override
-  public ResponseEntity<Void> saveMovement(Movements movements) {
-    movementsService.saveMovement(movements);
-    return ResponseEntity.ok().build();
+  public Mono<ResponseEntity<Void>> saveMovement(Mono<Movements> movements,
+                                                 ServerWebExchange exchange) {
+
+
+    Mono<Void> voidMono = movementsService.saveMovement(movements);
+
+    return voidMono.map(ResponseEntity::ok);
   }
 }

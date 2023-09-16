@@ -5,9 +5,12 @@ import com.microservice.movements.model.Movements;
 import com.microservice.movements.repository.MovementsRepository;
 import com.microservice.movements.service.mappers.MapMovement;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 
 /**
@@ -24,33 +27,50 @@ public class MovementsServiceImpl implements MovementsService {
 
 
   @Override
-  public List<MovementsDocuments> findByCustomerDocumentAndAccountNumber(
+  public Flux<Movements> findByCustomerDocumentAndAccountNumber(
           String customerDocument, String accountNumber) {
 
-    return movementsRepository
+    Flux<MovementsDocuments> movementsDocumentsFlux = movementsRepository
             .findByClientDocumentAndAccountNumber(customerDocument, accountNumber);
+
+    return movementsDocumentsFlux
+            .filter(Objects::nonNull)
+            .map(movementsDocuments -> mapMovement.mapMovementsDocumentToMovements(movementsDocuments));
   }
 
   @Override
-  public List<MovementsDocuments> findByCustomerDocumentAndCardNumber(
+  public Flux<Movements> findByCustomerDocumentAndCardNumber(
           String customerDocument, String cardNumber) {
 
-    return movementsRepository.findByClientDocumentAndCardNumber(customerDocument, cardNumber);
+    Flux<MovementsDocuments> movementsDocumentsFlux = movementsRepository.findByClientDocumentAndCardNumber(customerDocument, cardNumber);
+
+    return movementsDocumentsFlux
+            .filter(Objects::nonNull)
+            .map(movementsDocuments -> mapMovement.mapMovementsDocumentToMovements(movementsDocuments));
   }
 
   @Override
-  public List<MovementsDocuments> findByCustomerDocumentAndCreditId(
+  public Flux<Movements> findByCustomerDocumentAndCreditId(
           String customerDocument, String creditId) {
 
-    return movementsRepository.findByClientDocumentAndCreditNumber(customerDocument, creditId);
+    Flux<MovementsDocuments> movementsDocumentsFlux = movementsRepository.findByClientDocumentAndCreditNumber(customerDocument, creditId);
+
+    return movementsDocumentsFlux
+            .filter(Objects::nonNull)
+            .map(movementsDocuments -> mapMovement.mapMovementsDocumentToMovements(movementsDocuments));
   }
 
   @Override
-  public void saveMovement(Movements saveMovements) {
+  public Mono<Void> saveMovement(Mono<Movements> movements) {
 
-    MovementsDocuments movement = mapMovement.mapMovementToMovementDocument(saveMovements);
-    movement.setMovementDate(LocalDate.now());
+    Mono<MovementsDocuments> movementsDocumentsMono = movements.flatMap(movement -> {
 
-    movementsRepository.save(movement);
+      MovementsDocuments movementsDocuments = mapMovement.mapMovementToMovementDocument(movement);
+      movementsDocuments.setMovementDate(LocalDate.now());
+
+      return movementsRepository.save(movementsDocuments) ;
+    });
+
+    return movementsDocumentsMono.then();
   }
 }

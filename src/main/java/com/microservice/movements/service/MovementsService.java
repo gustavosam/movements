@@ -1,8 +1,8 @@
 package com.microservice.movements.service;
 
-import com.microservice.movements.documents.MovementsDocuments;
 import com.microservice.movements.model.Movements;
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * Esta interfaz contiene métodos que será implementados por MovementServiceImpl.
@@ -10,15 +10,15 @@ import java.util.List;
 
 public interface MovementsService {
 
-  List<MovementsDocuments> findByCustomerDocumentAndAccountNumber(
+  Flux<Movements> findByCustomerDocumentAndAccountNumber(
           String customerDocument, String accountNumber);
 
-  List<MovementsDocuments> findByCustomerDocumentAndCardNumber(
+  Flux<Movements> findByCustomerDocumentAndCardNumber(
           String customerDocument, String cardNumber);
 
-  List<MovementsDocuments> findByCustomerDocumentAndCreditId(
+  Flux<Movements> findByCustomerDocumentAndCreditId(
           String customerDocument, String creditId);
 
-  void saveMovement(
-          Movements saveMovements);
+  Mono<Void> saveMovement(
+          Mono<Movements> movements);
 }
